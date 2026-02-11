@@ -1,0 +1,200 @@
+{
+  "ruleChain": {
+    "id": "ypBfUBXcmVDc",
+    "name": "ggpTest",
+    "debugMode": true,
+    "root": true,
+    "disabled": false,
+    "additionalInfo": {
+      "createTime": "2026/02/08 15:39:44",
+      "description": "",
+      "layoutX": "280",
+      "layoutY": "280",
+      "noDefaultInput": false,
+      "updateTime": "2026/02/08 19:34:25",
+      "username": "admin"
+    }
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "nodes": [
+      {
+        "id": "node_8",
+        "additionalInfo": {
+          "layoutX": 505,
+          "layoutY": 280
+        },
+        "type": "restApiCall",
+        "name": "开始",
+        "debugMode": false,
+        "configuration": {
+          "body": "{\n    \"workflowInstanceId\": \"kim_kuang.cmglmuuda008insh3lcu4n4ru.workflow10\"\n}",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "maxParallelRequestsCount": 200,
+          "proxyPort": 0,
+          "readTimeoutMs": 2000,
+          "requestMethod": "POST",
+          "restEndpointUrlPattern": "http://10.10.1.102:3002/workflow/debugRun"
+        }
+      },
+      {
+        "id": "node_6",
+        "additionalInfo": {
+          "layoutX": 1640,
+          "layoutY": 281
+        },
+        "type": "end",
+        "name": "结束",
+        "debugMode": false,
+        "configuration": {}
+      },
+      {
+        "id": "node_10",
+        "additionalInfo": {
+          "layoutX": 799,
+          "layoutY": 279
+        },
+        "type": "restApiCall",
+        "name": "暂停",
+        "debugMode": false,
+        "configuration": {
+          "body": "{\n    \"workflowInstanceId\": \"kim_kuang.cmglmuuda008insh3lcu4n4ru.workflow10\"\n}",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "maxParallelRequestsCount": 200,
+          "proxyPort": 0,
+          "readTimeoutMs": 2000,
+          "requestMethod": "POST",
+          "restEndpointUrlPattern": "http://10.10.1.102:3002/workflow/pause"
+        }
+      },
+      {
+        "id": "node_11",
+        "additionalInfo": {
+          "layoutX": 1078,
+          "layoutY": 278
+        },
+        "type": "restApiCall",
+        "name": "继续",
+        "debugMode": false,
+        "configuration": {
+          "body": "{\n    \"workflowInstanceId\": \"kim_kuang.cmglmuuda008insh3lcu4n4ru.workflow10\"\n}",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "maxParallelRequestsCount": 200,
+          "proxyPort": 0,
+          "readTimeoutMs": 2000,
+          "requestMethod": "POST",
+          "restEndpointUrlPattern": "http://10.10.1.102:3002/workflow/continue"
+        }
+      },
+      {
+        "id": "node_17",
+        "additionalInfo": {
+          "layoutX": 631,
+          "layoutY": 403
+        },
+        "type": "delay",
+        "name": "等待10秒",
+        "debugMode": false,
+        "configuration": {
+          "delayMs": "10000",
+          "maxPendingMsgs": 1000,
+          "periodInSeconds": 0
+        }
+      },
+      {
+        "id": "node_19",
+        "additionalInfo": {
+          "layoutX": 946,
+          "layoutY": 406
+        },
+        "type": "delay",
+        "name": "等待5秒",
+        "debugMode": false,
+        "configuration": {
+          "delayMs": "5000",
+          "maxPendingMsgs": 1000,
+          "periodInSeconds": 0
+        }
+      },
+      {
+        "id": "node_21",
+        "additionalInfo": {
+          "layoutX": 1227,
+          "layoutY": 406
+        },
+        "type": "delay",
+        "name": "等待20秒",
+        "debugMode": false,
+        "configuration": {
+          "delayMs": "20000",
+          "maxPendingMsgs": 1000,
+          "periodInSeconds": 0
+        }
+      },
+      {
+        "id": "node_24",
+        "additionalInfo": {
+          "layoutX": 1369,
+          "layoutY": 281
+        },
+        "type": "restApiCall",
+        "name": "暂停",
+        "debugMode": false,
+        "configuration": {
+          "body": "{\n    \"workflowInstanceId\": \"kim_kuang.cmglmuuda008insh3lcu4n4ru.workflow10\"\n}",
+          "headers": {
+            "Content-Type": "application/json"
+          },
+          "maxParallelRequestsCount": 200,
+          "proxyPort": 0,
+          "readTimeoutMs": 2000,
+          "requestMethod": "POST",
+          "restEndpointUrlPattern": "http://10.10.1.102:3002/workflow/pause"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromId": "node_8",
+        "toId": "node_17",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_17",
+        "toId": "node_10",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_10",
+        "toId": "node_19",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_19",
+        "toId": "node_11",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_11",
+        "toId": "node_21",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_21",
+        "toId": "node_24",
+        "type": "Success"
+      },
+      {
+        "fromId": "node_24",
+        "toId": "node_6",
+        "type": "Success"
+      }
+    ]
+  }
+}

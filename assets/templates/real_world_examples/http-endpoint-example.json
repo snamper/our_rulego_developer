@@ -1,0 +1,118 @@
+{
+  "ruleChain": {
+    "id": "rChwsgN8t908",
+    "name": "post接口测试",
+    "debugMode": true,
+    "root": true,
+    "disabled": false,
+    "configuration": {
+      "vars": {}
+    },
+    "additionalInfo": {
+      "createTime": "2026/01/21 10:31:54",
+      "description": "",
+      "layoutX": "280",
+      "layoutY": "280",
+      "noDefaultInput": false,
+      "updateTime": "2026/02/03 11:06:57",
+      "username": "admin"
+    }
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "endpoints": [
+      {
+        "id": "node_4",
+        "additionalInfo": {
+          "layoutX": 560,
+          "layoutY": 273
+        },
+        "type": "endpoint/http",
+        "name": "HTTP",
+        "debugMode": false,
+        "configuration": {
+          "allowCors": true,
+          "idleTimeout": 60,
+          "readTimeout": 10,
+          "server": "ref://:9090",
+          "writeTimeout": 10
+        },
+        "processors": null,
+        "routers": [
+          {
+            "id": "zxRjHo1jAmO-",
+            "params": [
+              "POST"
+            ],
+            "from": {
+              "path": "/api/v1/t1",
+              "configuration": {},
+              "processors": [
+                "setJsonDataType"
+              ]
+            },
+            "to": {
+              "path": "rChwsgN8t908:node_6",
+              "configuration": {},
+              "wait": false,
+              "processors": [
+                "responseToBody"
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "id": "node_10",
+        "additionalInfo": {
+          "layoutX": 1052,
+          "layoutY": 269
+        },
+        "type": "log",
+        "name": "日志",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "return 'Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      },
+      {
+        "id": "node_6",
+        "additionalInfo": {
+          "layoutX": 793,
+          "layoutY": 272
+        },
+        "type": "jsFilter",
+        "name": "js过滤",
+        "debugMode": false,
+        "configuration": {
+          "jsScript": "msg =msg || {}\nmsg.status = 200\nmsg.test =hdd\nreturn msg"
+        }
+      },
+      {
+        "id": "node_12",
+        "additionalInfo": {
+          "layoutX": 1365,
+          "layoutY": 268
+        },
+        "type": "end",
+        "name": "结束",
+        "debugMode": false,
+        "configuration": {}
+      }
+    ],
+    "connections": [
+      {
+        "fromId": "node_6",
+        "toId": "node_10",
+        "type": "True"
+      },
+      {
+        "fromId": "node_10",
+        "toId": "node_12",
+        "type": "Success"
+      }
+    ]
+  }
+}

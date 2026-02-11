@@ -1,0 +1,109 @@
+{
+  "ruleChain": {
+    "id": "gtH1t1_6_W-h",
+    "name": "mqtt订阅",
+    "debugMode": true,
+    "root": true,
+    "disabled": false,
+    "configuration": {
+      "vars": {}
+    },
+    "additionalInfo": {
+      "createTime": "2025/09/02 14:38:19",
+      "description": "",
+      "layoutX": "280",
+      "layoutY": "280",
+      "message": "the rule chain has been disabled",
+      "noDefaultInput": false,
+      "updateTime": "2026/01/30 15:07:27",
+      "username": "admin"
+    }
+  },
+  "metadata": {
+    "firstNodeIndex": 0,
+    "endpoints": [
+      {
+        "id": "node_2",
+        "additionalInfo": {
+          "layoutX": 355,
+          "layoutY": 175
+        },
+        "type": "endpoint/mqtt",
+        "name": "MQTT",
+        "debugMode": false,
+        "configuration": {
+          "maxReconnectInterval": 0,
+          "password": "iotadmin",
+          "qOS": 0,
+          "server": "127.0.0.1:1883",
+          "username": "iotadmin"
+        },
+        "processors": null,
+        "routers": [
+          {
+            "id": "pxi5FhYA7hHs",
+            "params": [],
+            "from": {
+              "path": "devices/msg1",
+              "configuration": null,
+              "processors": []
+            },
+            "to": {
+              "path": "gtH1t1_6_W-h:node_10",
+              "configuration": null,
+              "wait": false,
+              "processors": []
+            }
+          },
+          {
+            "id": "NGzdsiOG904-",
+            "params": [],
+            "from": {
+              "path": "devices/msg",
+              "configuration": null,
+              "processors": []
+            },
+            "to": {
+              "path": "gtH1t1_6_W-h:node_5",
+              "configuration": null,
+              "wait": false,
+              "processors": []
+            }
+          }
+        ]
+      }
+    ],
+    "nodes": [
+      {
+        "id": "node_10",
+        "additionalInfo": {
+          "layoutX": 668,
+          "layoutY": 278
+        },
+        "type": "mqttClient",
+        "name": "MQTT发布...",
+        "debugMode": false,
+        "configuration": {
+          "maxReconnectInterval": 60,
+          "qOS": 0,
+          "server": "127.0.0.1:1883",
+          "topic": "devices/msg"
+        }
+      },
+      {
+        "id": "node_5",
+        "additionalInfo": {
+          "layoutX": 726,
+          "layoutY": 156
+        },
+        "type": "jsTransform",
+        "name": "js转换",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return {'msg':msg,'metadata':metadata,'msgType':msgType,'dataType':dataType};"
+        }
+      }
+    ],
+    "connections": []
+  }
+}

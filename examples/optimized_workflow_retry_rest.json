@@ -1,0 +1,110 @@
+{
+    "ruleChain": {
+        "id": "workflow_retry_rest",
+        "name": "工作流重试调用 WorkflowRetryRest",
+        "debugMode": true,
+        "root": true,
+        "disabled": false
+    },
+    "metadata": {
+        "firstNodeIndex": 0,
+        "nodes": [
+            {
+                "id": "start_call",
+                "type": "restApiCall",
+                "name": "开始调试 StartDebugRun",
+                "debugMode": true,
+                "configuration": {
+                    "restEndpointUrlPattern": "http://127.0.0.1:3002/workflow/debugRun",
+                    "requestMethod": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"workflowInstanceId\": \"${msg.workflowId}\"}",
+                    "readTimeoutMs": 5000
+                }
+            },
+            {
+                "id": "delay_10s",
+                "type": "delay",
+                "name": "等待10秒 Wait10Seconds",
+                "configuration": {
+                    "delayMs": 10000,
+                    "maxPendingMsgs": 1000
+                }
+            },
+            {
+                "id": "pause_call",
+                "type": "restApiCall",
+                "name": "暂停工作流 PauseWorkflow",
+                "debugMode": true,
+                "configuration": {
+                    "restEndpointUrlPattern": "http://127.0.0.1:3002/workflow/pause",
+                    "requestMethod": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"workflowInstanceId\": \"${msg.workflowId}\"}",
+                    "readTimeoutMs": 5000
+                }
+            },
+            {
+                "id": "delay_5s",
+                "type": "delay",
+                "name": "等待5秒 Wait5Seconds",
+                "configuration": {
+                    "delayMs": 5000
+                }
+            },
+            {
+                "id": "continue_call",
+                "type": "restApiCall",
+                "name": "继续执行 ContinueWorkflow",
+                "debugMode": true,
+                "configuration": {
+                    "restEndpointUrlPattern": "http://127.0.0.1:3002/workflow/continue",
+                    "requestMethod": "POST",
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": "{\"workflowInstanceId\": \"${msg.workflowId}\"}"
+                }
+            },
+            {
+                "id": "log_end",
+                "type": "log",
+                "name": "记录结束 LogCompletion",
+                "configuration": {
+                    "jsScript": "return 'Workflow ' + msg.workflowId + ' sequence completed successfully.';"
+                }
+            }
+        ],
+        "connections": [
+            {
+                "fromId": "start_call",
+                "toId": "delay_10s",
+                "type": "Success"
+            },
+            {
+                "fromId": "delay_10s",
+                "toId": "pause_call",
+                "type": "Success"
+            },
+            {
+                "fromId": "pause_call",
+                "toId": "delay_5s",
+                "type": "Success"
+            },
+            {
+                "fromId": "delay_5s",
+                "toId": "continue_call",
+                "type": "Success"
+            },
+            {
+                "fromId": "continue_call",
+                "toId": "log_end",
+                "type": "Success"
+            }
+        ]
+    }
+}

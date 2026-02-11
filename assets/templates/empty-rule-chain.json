@@ -1,0 +1,12 @@
+{
+    "ruleChain": {
+        "id": "new_chain",
+        "name": "新规则链 NewRuleChain",
+        "root": true,
+        "debugMode": false
+    },
+    "metadata": {
+        "nodes": [],
+        "connections": []
+    }
+}
