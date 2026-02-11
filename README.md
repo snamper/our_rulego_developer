@@ -1,13 +1,19 @@
 # RuleGo Expert Developer Skill (our_rulego_developer)
 
-**RuleGo 规则引擎专家**。本技能用于处理 [RuleGo](https://rulego.cc/) 规则链开发、组件编排、自定义组件实现以及 Endpoint 集成。
+**RuleGo 规则引擎专家**。本技能严格遵循 **Server-First** 开发范式，用于处理 [RuleGo-Server](https://github.com/rulego/rulego/tree/main/examples/server) 环境下的高级规则链开发、组件编排与架构设计。
 
-> 🧠 **Core Intelligence**: 集成了基于 **505 条真实线上规则链** 的深度分析成果，提供经过实战验证的最佳配置模版。
+> 🧠 **Core Philosophy**: RuleGo Skill 专注于**流程解耦**与**DSL编排**，利用标准组件或原子化扩展来实现复杂业务。
 
-## ✨ 核心能力
+## ✨ 核心能力矩阵 (Features)
 
-- **🏗️ 规则链编排**: 提供符合[中英双语命名规范](references/development-standards.md)的 DSL 生成。
-- **🔌 Endpoint集成**: 零代码配置 HTTP, MQTT, WebSocket, Cron 接入点。
+本技能全面覆盖 RuleGo Server 及其高级特性：
+
+| 领域 | 覆盖特性 |
+| :--- | :--- |
+| **⚡️ 流程控制** | **子链嵌套 (Sub-Chain)**、**引擎执行中断恢复 (Resume)**、**流程解耦设计** |
+| **🛠️ 组件增强** | **JS/Lua 脚本配置**、**UDF (自定义函数)**、**Global (全局变量)** |
+| **🔌 资源管理** | **Pool (协程池/连接池)**、**组件连接复用 (Reuse)** |
+| **🛡️ 架构扩展** | **AOP (切面拦截)**、**Endpoint 集成** (HTTP/MQTT)、**StreamSQL** |
 - **🛠️ 组件开发**: 提供标准化的、解耦的 Go 自定义组件模版。
 - **📚 参数金典**: 防止配置错误的[组件参数详解](references/component-catalog.md)。
 - **🤖 AI Tool化**: 支持将规则链一键转化为 MCP (Model Context Protocol) 工具。
