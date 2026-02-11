@@ -77,6 +77,25 @@
 
 ---
 
+## 3.5 高级流控 (Advanced Flow)
+
+### **delay** (延迟队列)
+- **type**: `delay`
+- **功能**: 暂存消息，延迟一定时间后发送。
+- **configuration**:
+    - `periodInSeconds`: (int) 延迟秒数。
+    - `maxPendingMsgs`: (int) 队列最大积压数。超过走 Failure。
+
+### **groupFilter** (组合过滤)
+- **type**: `groupFilter`
+- **功能**: 复用已有的过滤器节点，进行 AND/OR 组合。
+- **configuration**:
+    - `nodeIds`: (string) 要复用的 Filter 节点 ID 列表，逗号分隔，如 `"node_a,node_b"`。
+    - `allMatches`: (bool) `true`=AND (全满足), `false`=OR (任一满足)。
+
+---
+
+
 ## 4. 外部系统联动 (External) - ⚠️ 最易放错位置
 
 ### **restApiCall** (HTTP 调用)
