@@ -93,8 +93,140 @@
     - `nodeIds`: (string) 要复用的 Filter 节点 ID 列表，逗号分隔，如 `"node_a,node_b"`。
     - `allMatches`: (bool) `true`=AND (全满足), `false`=OR (任一满足)。
 
+### **groupAction** (组合动作)
+- **type**: `groupAction`
+- **功能**: 并行执行一组动作节点，等待全部完成后继续。
+- **configuration**:
+    - `nodeIds`: (string) 逗号分隔的节点 ID。
+
+### **switch** (条件分支 - 高频 93次)
+- **type**: `switch`
+- **功能**: 基于**表达式**的多路分支（比 `jsSwitch` 轻量，不需要 JS 引擎）。
+- **configuration**:
+    - `cases`: (array) 条件数组，每项包含 `case` (表达式) 和 `then` (Relation 名称)。
+- **示例**:
+    ```json
+    {
+      "cases": [
+        {"case": "msg.temperature>=20 && msg.temperature<=50", "then": "Case1"},
+        {"case": "msg.temperature>50", "then": "Case2"}
+      ]
+    }
+    ```
+
+### **flow** (子链调用 - 推荐替代 chain)
+- **type**: `flow`
+- **功能**: 调用另一个规则链（比 `chain` 更灵活，支持 `extend` 参数）。
+- **configuration**:
+    - `targetId`: (string) **必填**。目标规则链 ID。
+    - `extend`: (bool) 是否传递上下文扩展信息。
+
+### **msgTypeSwitch** (消息类型分支)
+- **type**: `msgTypeSwitch`
+- **功能**: 根据 `msg.Type` 自动路由到不同的有向边。无需配置。
+
+### **metadataTransform** (元数据映射 - 10次)
+- **type**: `metadataTransform`
+- **功能**: 将消息字段映射到元数据（比 `jsTransform` 轻量）。
+- **configuration**:
+    - `mapping`: (object) Key-Value 映射，如 `{"temperature": "msg.temperature"}`。
+
+### **comment** (注释节点)
+- **type**: `comment`
+- **功能**: 纯注释用，不影响消息流。用于在可视化编辑器中标记说明。
+
+### **end** (结束节点)
+- **type**: `end`
+- **功能**: 显式标记流程结束。通常作为分支的终点。
+
+### **break** (中断节点)
+- **type**: `break`
+- **功能**: 从循环中跳出（配合 `for` / `while` 使用）。
+
+### **ref** (引用节点)
+- **type**: `ref`
+- **功能**: 引用当前链中已存在的另一个节点，避免重复定义。
+
 ---
 
+## 3.6 系统工具 (Utility)
+
+### **exec** (执行系统命令 - 10次)
+- **type**: `exec`
+- **功能**: 在服务器上执行系统命令。
+- **configuration**:
+    - `cmd`: (string) **必填**。命令字符串，如 `"echo hello"`。
+    - `args`: (array) 命令参数列表。
+    - `log`: (bool) 是否记录执行日志。
+    - `replaceData`: (bool) 是否用命令输出替换 `msg.Data`。
+- **⚠️ 安全提醒**: 禁止将用户输入直接拼入 `cmd`！
+
+### **sendEmail** (发送邮件 - 5次)
+- **type**: `sendEmail`
+- **功能**: 通过 SMTP 发送邮件。
+- **configuration**:
+    - `smtpHost`: (string) SMTP 服务器，如 `"smtp.gmail.com"`。
+    - `smtpPort`: (int) 端口。
+    - `username`: (string) 登录账号。支持 `${global.xxx}`。
+    - `password`: (string) 登录密码。支持 `${global.xxx}`。
+    - `connectTimeout`: (int) 连接超时秒数。
+    - `email`: (object) 邮件内容：
+        - `from`: (string) 发件人。
+        - `to`: (string) 收件人。支持变量替换。
+        - `subject`: (string) 主题。
+        - `body`: (string) 正文。
+
+### **text/template** (Go 模板渲染 - 7次)
+- **type**: `text/template`
+- **功能**: 使用 Go `text/template` 语法渲染模板。
+- **configuration**:
+    - `template`: (string) **必填**。Go 模板字符串，如 `"ID: {{ .id }}, Data: {{ .data | escape }}"`。
+
+### **net** (TCP/UDP 网络客户端 - 7次)
+- **type**: `net`
+- **功能**: 向 TCP/UDP 服务器发送数据。
+- **configuration**:
+    - `protocol`: (string) `tcp` 或 `udp`。
+    - `server`: (string) 目标地址，如 `"192.168.1.1:8080"`。
+    - `connectTimeout`: (int) 连接超时秒数。
+    - `heartbeatInterval`: (int) 心跳间隔秒数。
+
+---
+
+## 3.7 AI/LLM 组件 (AI)
+
+### **ai/llm** (大模型调用 - 10次)
+- **type**: `ai/llm`
+- **功能**: 调用 OpenAI 兼容的 LLM 接口。
+- **configuration**:
+    - `url`: (string) API 地址，如 `"https://api.openai.com/v1"`。
+    - `model`: (string) 模型名称，如 `"gpt-4o"`, `"o1-mini"`。
+    - `messages`: (array) 消息列表，每项包含 `role` 和 `content`。
+    - `images`: (array) 图片 URL 列表（多模态）。
+    - `params`: (object) 推理参数：
+        - `temperature`: (float) 温度。
+        - `maxTokens`: (int) 最大输出 Token。
+        - `topP`: (float) 核采样。
+        - `responseFormat`: (string) 响应格式。
+        - `jsonSchema`: (string) JSON Schema 约束。
+
+### **ai/createImage** (AI 生成图片 - 5次)
+- **type**: `ai/createImage`
+
+### **ai/generate-text** / **ai/generate-image** (文本/图片生成)
+- **type**: `ai/generate-text`, `ai/generate-image`
+
+---
+
+## 3.8 CI/CD 组件
+
+### **ci/gitClone** (Git 克隆 - 6次)
+- **type**: `ci/gitClone`
+
+### **ci/gitLog** / **ci/gitCreateTag** / **ci/ps**
+- **type**: `ci/gitLog`, `ci/gitCreateTag`, `ci/ps`
+
+---
 
 ## 4. 外部系统联动 (External) - ⚠️ 最易放错位置
 
@@ -138,15 +270,23 @@
 ---
 
 
-## 5. 缓存操作 (Cache)
+## 5. 缓存操作 (Cache - 实战 12次)
 
-### **cache/get, cache/set, cache/delete**
-- **type**: `cache/get`, `cache/set`, `cache/delete`
-- **功能**: 对 RuleGo 内置缓存进行增删改查。
+### **cacheGet / cacheSet / cacheDelete**
+- **type**: `cacheGet`, `cacheSet`, `cacheDelete`
+- **功能**: 对 RuleGo 内置缓存进行增删改查。支持链级 (chain) 和全局 (global) 两种作用域。
 - **configuration**:
-    - `key`: (string) 缓存 Key。支持变量替换。
-    - `ttl`: (string) 过期时间 (仅 set)，如 "10m"。
-    - `scope`: (string) `chain` (链级) 或 `global` (全局)。
+    - `key`: (string) 缓存 Key。支持 `${msg.xxx}` 变量替换。
+    - `value`: (string) 缓存值 (仅 cacheSet)。
+    - `ttl`: (string) 过期时间 (仅 cacheSet)，如 `"10m"`, `"1h"`。空 = 永不过期。
+    - `scope`: (string) `chain` (当前规则链级) 或 `global` (全局跨链共享)。
+- **JS 脚本中直接操作** (无需组件):
+    ```javascript
+    // 在 jsTransform / jsFilter 中
+    let cache = $ctx.ChainCache();  // 或 $ctx.GlobalCache()
+    cache.Set("key", "value", "10m");
+    let val = cache.Get("key");
+    ```
 
 ---
 
@@ -154,11 +294,33 @@
 
 这些模块已在 `rulego-components` 中提供，启动时需带 `-tags with_extend`：
 
-- **Kafka**: `kafkaProducer`, `kafkaConsumer`
-- **Redis**: `redisClient`, `redisPublisher`
-- **MongoDB**: `mongodbClient`
+### 消息队列
+- **Kafka**: `x/kafkaProducer` (5次)
+- **NATS**: `x/natsClient` (5次), `endpoint/nats`
+- **NSQ**: `x/nsqClient` (3次)
+- **RabbitMQ**: `x/rabbitmqClient` (1次)
+- **Redis Pub/Sub**: `x/redisPub` (3次)
+
+### 数据库 & 存储
+- **Redis**: `x/redisClient` (11次)
+- **MongoDB**: `x/mongodbClient` (14次)
+- **TDengine**: `taosClient` (2次) - 时序数据库
+
+### IoT 协议
+- **OPC-UA**: `x/opcuaRead` (4次), `x/opcuaWrite` (5次) - 工业控制协议
+- **Modbus**: `x/modbus` (1次) - 工业总线
+
+### 网络通信
+- **gRPC**: `x/grpcClient` (7次)
+- **WuKongIM**: `x/wukongimSender` (1次)
+
+### 流处理
+- **Stream**: `x/streamAggregator` (4次), `x/streamTransform` (1次)
+- **Lua**: `x/luaFilter` (6次), `x/luaTransform` (5次)
+
+### 可观测性
+- **OpenTelemetry**: `x/otel` (2次)
 - **Prometheus**: `prometheus`
-- **Lua**: `luaFilter`, `luaTransform`
 
 ---
 
