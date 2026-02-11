@@ -51,15 +51,36 @@ msg := types.NewMsg(
 )
 ```
 
-### 异步处理并获取结果
+### 异步处理与回调 (Advanced Options)
+使用 `RuleContextOption` 获得更精细的执行控制：
+
 ```go
-engine.OnMsg(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
-    if err != nil {
-        // 处理错误
-    } else {
-        // relationType 指示了消息流转的结果（如 Success, True 等）
-    }
-}))
+engine.OnMsg(msg, 
+    // 1. 单个节点结束回调（每次分叉都会触发）
+    types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
+        log.Printf("Node end: %s, Relation: %s", msg.Id, relationType)
+    }),
+    // 2. 整条规则链执行完毕回调（只触发一次）
+    types.WithOnAllNodeCompleted(func() {
+        log.Println("Rule chain execution finished completely.")
+    }),
+    // 3. 获取规则链快照（包含所有节点日志）- 调试神器
+    types.WithOnRuleChainCompleted(func(ctx types.RuleContext, snapshot types.RuleChainRunSnapshot) {
+        log.Printf("Chain trace: %+v", snapshot.Logs)
+    }),
+    // 4. 指定开始节点（跳过 Root）
+    types.WithStartNode("node_specific_id"),
+)
+```
+
+### 调试模式回调
+如果规则链或节点开启了 `debugMode: true`，会触发 `config.OnDebug`（全局）和 `WithOnNodeDebug`（单次）：
+
+```go
+types.WithOnNodeDebug(func(chainId, flowType, nodeId string, msg RuleMsg, relationType string, err error) {
+    // flowType: IN (进入节点) | OUT (离开节点)
+    fmt.Printf("[%s] Node %s %s: %s\n", chainId, nodeId, flowType, msg.Data)
+})
 ```
 
 ## 3. 编排上下文 (RuleContext)

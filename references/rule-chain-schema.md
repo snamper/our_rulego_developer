@@ -6,11 +6,13 @@
 
 | 字段 | 类型 | 描述 |
 | :--- | :--- | :--- |
-| **id** | string | 规则链租户范围内唯一的 ID。 |
-| **name** | string | 规则链名称。必须遵循 **“中文 + 英文”** 格式。 |
-| **root** | boolean | 是否为根规则链。 |
-| **debugMode** | boolean | 是否开启调试模式，开启后会记录每个节点的执行日志。 |
-| **configuration** | object | 规则链级别的配置（Key-Value）。 |
+| 字段 | 类型 | 描述 |
+| :--- | :--- | :--- |
+| **id** | string | 规则链唯一标识。建议使用**项目无关**的命名（如 `general_weather_alert` ），以便复用。 |
+| **name** | string | 显示名称。必须遵循 **“中文 + 英文”** 格式（如 `天气报警 WeatherAlert`）。 |
+| **root** | boolean | 标记是否为根链。**根链**会作为引擎的入口，通常只应有一个根链。 |
+| **debugMode** | boolean | **全局调试开关**。开启后，该链下**所有节点**都会触发 `OnDebug` 回调（记录出入参）。与节点级 `debugMode` 是 **OR** 的关系。 |
+| **configuration** | object | 规则链级配置变量。在此定义的 Key-Value 可在链内节点通过 `${vars.key}` 引用。 |
 
 ## 2. metadata 对象
 

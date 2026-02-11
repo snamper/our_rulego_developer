@@ -1,6 +1,6 @@
 ---
 name: our_rulego_developer
-description: "RuleGo 规则引擎专家。用于处理 RuleGo 规则链开发、组件编排、自定义组件实现以及 Endpoint 集成。当涉及 RuleGo 规则链 (Rule Chain) JSON 定义、Go 代码集成、节点 (Nodes) 配置或可视化编排相关任务时使用。"
+description: "Expert RuleGo developer guide. Use when: architecting RuleGo projects, writing Rule Chain DSL (JSON), configuring Endpoints (HTTP/MQTT/Cron), implementing StreamSQL, developing Go extensions (Components/UDF/AOP), or integrating RuleGo-Server. Focuses on Server-First architecture, standard naming conventions, and highly reusable, parameterized component design."
 ---
 
 # RuleGo 技能指南

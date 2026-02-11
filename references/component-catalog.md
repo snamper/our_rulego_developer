@@ -118,7 +118,20 @@
 
 ---
 
-## 5. 官方扩展模块 (rulego-components)
+
+## 5. 缓存操作 (Cache)
+
+### **cache/get, cache/set, cache/delete**
+- **type**: `cache/get`, `cache/set`, `cache/delete`
+- **功能**: 对 RuleGo 内置缓存进行增删改查。
+- **configuration**:
+    - `key`: (string) 缓存 Key。支持变量替换。
+    - `ttl`: (string) 过期时间 (仅 set)，如 "10m"。
+    - `scope`: (string) `chain` (链级) 或 `global` (全局)。
+
+---
+
+## 6. 官方扩展模块 (rulego-components)
 
 这些模块已在 `rulego-components` 中提供，启动时需带 `-tags with_extend`：
 

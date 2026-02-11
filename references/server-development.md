@@ -64,6 +64,53 @@ func (n *MyServiceNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 在组件文件中使用 `init()` 函数，或在服务器启动入口处统一匿名引入。
 由于不能修改 server 结构，建议在 `cmd/server/` 下新建一个 `with_custom.go` 并标记 build tag。
 
-## 4. 调试与验证
+
+## 4. Server 核心配置详解 (config.conf)
+
+RuleGo Server 的强大在于其高度可配置性。以下是几个至关重要的配置项，直接影响您的开发模式：
+
+### 4.1 全局变量 (Global Properties)
+
+在 `[global]` 节定义的变量，可以在 **任何规则链** 的 **任何节点配置** 中通过 `${global.xxx}` 引用。
+
+```toml
+[global]
+  # 数据库连接串，DSL 中使用 ${global.sql_dsn} 引用
+  sql_dsn = "root:123456@tcp(127.0.0.1:3306)/test"
+  # API 密钥，DSL 中使用 ${global.api_key} 引用
+  api_key = "sk-xxxxxxxx"
+```
+
+> **最佳实践**: 永远不要在 JSON DSL 中硬编码密码或 IP。始终使用 `global` 变量。
+
+### 4.2 自定义函数 (UDF)
+
+您可以将 Go 函数注册为 UDF，然后在 DSL 的 `jsTransform` 或 `functions` 节点中直接调用。
+
+1.  **注册 (Go Code)**:
+    ```go
+    // 在 server 初始化时注册
+    config.RegisterUdf("my_hash", func(str string) string {
+        return utils.Hash(str)
+    })
+    ```
+2.  **调用 (DSL)**:
+    *   **JS**: `var hash = global.my_hash(msg.data);`
+    *   **Lua**: `local hash = global.my_hash(msg.data)`
+
+### 4.3 协程池隔离 (Node Pool)
+
+对于 `dbClient` 或 `restApiCall` 等慢速 I/O 节点，建议配置独立的协程池，避免阻塞核心规则处理线程。
+
+```toml
+# node_pool_file = "./node_pool.json"
+```
+在 `node_pool.json` 中定义哪些节点类型运行在独立的 Pool 中。
+
+### 4.4 调试回调 (OnDebug)
+
+开启 `debugMode: true` 的节点会触发全局 `OnDebug` 回调。Server 默认会打印详细的输入/输出日志，这是排查问题的利器。
+
+## 5. 调试与验证
 - **查看日志**：开启 `config.conf` 中的 `debug = true`，日志会打印每个节点的输入输出。
 - **API 测试**：通过 `POST /api/v1/msg/{chainId}` 直接向指定规则链发送测试消息。

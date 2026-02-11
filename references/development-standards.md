@@ -26,6 +26,12 @@
 - **超时处理**: 凡涉及网络/磁盘 IO，必须提供 `timeoutMs` 或类似可配置参数。
 - **变量替换支持**: 使用 `el.NewTemplate()` 手动支持配置项中的 `${...}` 语法。
 
+### D. 高级模式 (Shared & Pool)
+- **SharedNode (节点共享)**: 对于 MQTT Client 或 Database Client，如果多个节点使用相同的配置，应使用 `SharedNode` 机制避免重复连接。
+    - *原则*: 不要在 `OnMsg` 里创建客户端；在 `Init` 里创建，或使用 `Resource` 注册表。
+- **Node Pool (资源隔离)**: 根据业务 IO 特性，将节点分类放入不同的协程池。
+    - *配置*: 在 `rulego.yml` 或 `config.conf` 中为特定 Type 的组件指定 `pool_name`。
+
 ## 3. 开发注意事项 (踩坑指南)
 
 - **并发竞争**: RuleGo 是并发运行规则链的。避免在节点 struct 中定义普通变量来累加值。
