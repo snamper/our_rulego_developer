@@ -48,20 +48,44 @@ AI 如何知道这个工具怎么用？通过规则链的 `additionalInfo` 字�
 
 1.  **输入规范**: `${msg.city}` 对应 Schema 中的属性。
 2.  **单一职责**: 仅仅做计算或查询，不要包含复杂的副作用（除非那就是工具的目的）。
-3.  **返回结果**: 最后一个节点应该是 `jsTransform` 或其他能修改 `msg` 的节点。RuleGo 会将最终的 `msg.data` 作为 Tool Result 返回给 AI。
+## 1. MCP 集成模式 (Integration Modes)
 
-## 5. 连接 AI
+RuleGo-Server 支持两种维度的 MCP 集成，满足不同的工具暴露需求。
 
-使用 MCP 客户端（如 Claude Desktop）配置 endpoint:
+### 1.1 租户级集成 (Tenant Level)
+*   **接口**: `/api/v1/mcp/:apiKey/sse`
+*   **功能**: 将指定租户下的**所有规则链**作为独立的 MCP 工具暴露给 AI。
+*   **特性**: 粒度粗，适合需要 AI 调度全局任务的场景。
+
+### 1.2 规则链级集成 (Chain Level)
+*   **接口**: `/api/v1/rules/{chainId}/mcp/sse`
+*   **功能**: 仅将**当前规则链中配置的工具节点**作为 MCP 工具暴露。
+*   **注意**: 这种模式需要配置 MCP Server Endpoint，将规则链内部编排的组件转化为 AI 可调用的能力。
+
+---
+
+## 2. 客户端配置示例 (Client Configuration)
+
+以下是将 RuleGo-Server 工具集成到 AI Agent（如 Claude Desktop）的配置 JSON：
 
 ```json
 {
   "mcpServers": {
-    "rulego": {
-      "command": "docker",
-      "args": ["run", "-i", "--rm", "rulego/server", "run-mcp"]
+    "hbc_test": {
+      "url": "http://127.0.0.1:9090/api/v1/rules/MZo3g9SGaJBW/mcp/sse"
     }
   }
 }
 ```
-*(注：Server 模式下通常通过 SSE 连接，详情参考 Server 文档)*
+
+---
+
+## 3. 核心差异总结
+| 集成维度 | 访问路径 | 暴露内容 |
+| :--- | :--- | :--- |
+| **租户级** | `/api/v1/mcp/:id/sse` | 所有规则链 |
+| **规则链级** | `/api/v1/rules/:id/mcp/sse` | 该链内的组件工具 |
+
+## 3. 调用方式选择
+*   **Tool 调用**: 当通过 MCP 触发工具时，底层会自动映射到对应的节点执行。
+*   **数据隔离**: 通过 apiKey 实现租户级别的数据与权限隔离。

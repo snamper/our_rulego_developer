@@ -82,8 +82,25 @@ types.WithOnNodeDebug(func(chainId, flowType, nodeId string, msg RuleMsg, relati
     fmt.Printf("[%s] Node %s %s: %s\n", chainId, nodeId, flowType, msg.Data)
 })
 ```
+## 2. 平台核心调用接口 (Integration APIs)
 
-## 3. 编排上下文 (RuleContext)
+RuleGo-Server 通过以下标准 REST 接口实现与外部业务系统的无缝集成。
+
+### 2.1 同步调用接口
+*   **接口**: `POST /api/v1/rules/{chainId}/execute/{msgType}`
+*   **特性**: **关注处理结果**。引擎会阻塞等待规则链执行完成，并在 Response Body 中返回处理后的消息内容。
+*   **适用**: 需要即时决策或数据转换的场景。
+
+### 2.2 异步调用接口
+*   **接口**: `POST /api/v1/rules/{chainId}/notify/{msgType}`
+*   **特性**: **不关注处理结果**。接口接收到请求后立即返回 202，规则链在后台异步异步执行。
+*   **适用**: 状态同步、采集上报、告警触发等。
+
+---
+
+## 3. MCP 核心集成 (AI Agent Tooling)
+
+## 4. 编排上下文 (RuleContext)
 
 在节点内部可以通过 `RuleContext` 操作消息流向：
 - `ctx.TellSuccess(msg)`: 告知引擎节点处理成功，流向 `Success` 关系。
